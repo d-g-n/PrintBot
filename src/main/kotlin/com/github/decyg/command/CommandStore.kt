@@ -12,6 +12,11 @@ object CommandStore {
 
     fun registerAllPlugins() {
 
+        // clean out the existing commandstore
+
+        commandStore.clear()
+        DiscordCore.logger.info("Successfully cleared all registered commands")
+
         val pluginFolder = File(DiscordCore.configStore[config.pluginfolder])
         
         pluginFolder.listFiles().forEach {
@@ -24,15 +29,16 @@ object CommandStore {
 
                     commandStore.put(it, curRes)
 
+                    DiscordCore.logger.info("Successfully registered command: ${curRes.prettyName} with alias $it")
+
                 }
 
             } catch (e : Exception) {
-                println("bad thing happened, replace this with a logger later")
+                DiscordCore.logger.error("Command: ${it.nameWithoutExtension} could not be registered with reason: ", e)
             }
 
         }
 
-        println(commandStore)
     }
 
 }

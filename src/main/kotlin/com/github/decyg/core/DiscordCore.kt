@@ -5,6 +5,7 @@ import com.github.decyg.command.CommandStore
 import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.overriding
+import org.slf4j.LoggerFactory
 import sx.blah.discord.api.ClientBuilder
 import sx.blah.discord.api.IDiscordClient
 import sx.blah.discord.api.events.EventSubscriber
@@ -17,6 +18,7 @@ import java.io.File
 object DiscordCore {
 
     lateinit var client : IDiscordClient
+    val logger = LoggerFactory.getLogger("com.github.decyg.PrintBot")
 
     val configStore = EnvironmentVariables() overriding
             ConfigurationProperties.fromFile(File("config/config.properties"))

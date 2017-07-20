@@ -35,6 +35,11 @@ object CommandHandler {
         // if a command isn't found, do nothing, if a command is found but the wrong args are entered say what went
         // wrong
 
+        if(!CommandStore.commandStore.containsKey(commandName))
+            return
+
+        val command = CommandStore.commandStore[commandName]
+
 
         println(commandName)
         println(tokenizeRes)
