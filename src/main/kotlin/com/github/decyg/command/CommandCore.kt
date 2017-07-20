@@ -11,10 +11,6 @@ object CommandCore {
 
     // Type safe builder definitions
 
-    interface CommandInterface {
-        val command : Command
-    }
-
     class Command {
         lateinit var commandAliases : List<String>
         lateinit var prettyName : String

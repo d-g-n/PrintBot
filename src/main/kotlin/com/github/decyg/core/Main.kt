@@ -1,8 +1,5 @@
 package com.github.decyg.core
 
-import java.io.File
-import javax.script.ScriptEngineManager
-
 fun main(args: Array<String>) {
 
     if(args.size != 1){
@@ -12,11 +9,7 @@ fun main(args: Array<String>) {
 
     DiscordCore.login(args[0])
 
-    val engine = ScriptEngineManager().getEngineByExtension("kts")!!
 
-    val res = engine.eval(File("plugins/test.kts").reader())
-
-    println(res)
 
 }
 

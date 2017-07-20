@@ -37,7 +37,7 @@ object DiscordCore {
     @EventSubscriber
     fun onReady(ev : ReadyEvent){
 
-        CommandStore
+        CommandStore.registerAllPlugins()
 
     }
 
