@@ -63,21 +63,62 @@ object Tokenizer {
 
 }
 
-interface Token{
-    val underlyingString : String
+sealed class Token {
+
+    var underlyingString : String = ""
+    var isOptional : Boolean = false
+    var isGreedy : Boolean = false
+
+    abstract fun produceToken(input : String) : Pair<Token?, String>
+
+    private fun getRegexResult(inputString : String, regex : Regex) : Pair<String?, String> {
+
+        val matchRes = regex.find(inputString)
+
+        val foundRes = matchRes?.groups?.get(1)?.value
+        val restOfString = inputString.subSequence(matchRes?.value?.length ?: 0, inputString.length).toString().trim()
+
+        return Pair(foundRes, restOfString)
+    }
+
+    infix fun isOptional(isOpt : Boolean) : Token{
+        this.isOptional = isOpt
+        return this
+    }
+
+    infix fun isGreedy(isGreed : Boolean) : Token{
+        this.isGreedy = isGreed
+        return this
+    }
+
 }
 
-data class TimeToken(
-        override var underlyingString: String,
-        val timeMillis : Long
-) : Token
+class TimeToken : Token() {
 
-data class UserToken(
-        override var underlyingString: String,
-        val mentionedUser : IUser
-) : Token
+    var timeMillis : Long = 0
 
-data class TextToken(
-        override var underlyingString: String,
-        var isQuoted : Boolean
-) : Token
+    override fun produceToken(input: String): Pair<Token?, String> {
+        return Pair(null, "")
+    }
+
+}
+
+class UserToken : Token() {
+
+    lateinit var mentionedUser : IUser
+
+    override fun produceToken(input: String): Pair<Token?, String> {
+        return Pair(null, "")
+    }
+
+}
+
+class TextToken : Token() {
+
+    var isQuoted = false
+
+    override fun produceToken(input: String): Pair<Token?, String> {
+        return Pair(null, "")
+    }
+
+}

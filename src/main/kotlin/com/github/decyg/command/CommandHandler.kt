@@ -38,7 +38,33 @@ object CommandHandler {
         if(!CommandStore.commandStore.containsKey(commandName))
             return
 
-        val command = CommandStore.commandStore[commandName]
+        val command = CommandStore.commandStore[commandName]!!
+
+        // next validate the list of tokens, how?
+        // basically get the list of modified enums in the command.argumentparams into a local list, go through
+        // it one by one and for each accept "just" that argument or one or more
+        // it's just a validation pass so it should just be a simple "i expect one or more etc" and it'll break out
+        // and return with error if it gets something unexpected
+
+        var userArguments = tokenizeRes
+
+        command.argumentParams.forEach { tokEnum ->
+
+            // if it's greedy keep consuming tokens from userarguments until userarguments is empty or it bumps into a token that doesn't match
+            if(tokEnum.isGreedy){
+
+                tokEnum.matchesToken(tokenizeRes[0])
+
+            } else {
+                // if it's
+
+            }
+
+        }
+
+        // hasn't consumed all the arguments,
+        if(userArguments.isNotEmpty())
+            return
 
 
         println(commandName)

@@ -81,6 +81,17 @@ enum class TokenEnum(val regex : Regex, private val tokenProducer : TokenEnum.(S
     // public safe function for calling the processing functions
     fun produceToken(input : String) : Pair<Token?, String> = this.tokenProducer(input)
 
+    fun matchesToken(token : Token) : Boolean {
+
+        when (token::class) {
+            TimeToken::class -> this == TEXT
+            UserToken::class -> this == USER
+            TextToken::class -> this == TEXT || this == QUOTED_TEXT
+        }
+
+        return false
+    }
+
     infix fun isOptional(isOpt : Boolean) : TokenEnum{
         this.isOptional = isOpt
         return this
@@ -90,5 +101,6 @@ enum class TokenEnum(val regex : Regex, private val tokenProducer : TokenEnum.(S
         this.isGreedy = isGreed
         return this
     }
+
 
 }
