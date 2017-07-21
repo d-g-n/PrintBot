@@ -46,7 +46,7 @@ object CommandHandler {
         // so in the argumentparams of each defined command they have a series of regex which can bit tokenize the
         // result
 
-        var consumedTokens = mutableListOf<Token>()
+        val consumedTokens = mutableListOf<Token>()
         var consumingMessageString = messageString.subSequence(commandName.length, messageString.length).toString().trim()
 
         command.argumentParams.forEach { token ->
@@ -56,9 +56,17 @@ object CommandHandler {
             // if it's not optional and it's not a match panic/report to use
             // in the pair if the token is null it's not a match, the "rest of the string" is the second arg
 
-            val curRes = token.produceToken(consumingMessageString)
+            var curRes = token.produceToken(consumingMessageString)
 
             if(token.isGreedy){ // consume as many as possible, mind if the first is null then it's not a match
+
+                while(curRes.first != null){
+
+                    consumedTokens.add(curRes.first!!)
+                    consumingMessageString = curRes.second
+
+                    curRes = token.produceToken(consumingMessageString)
+                }
 
             } else { // consume one
 
@@ -87,6 +95,7 @@ object CommandHandler {
 
         println(commandName)
         println(consumingMessageString)
+        println(consumedTokens)
     }
 
 }

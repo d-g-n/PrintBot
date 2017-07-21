@@ -106,12 +106,21 @@ class TextToken : Token() {
 
         val textRes = getRegexResult(inputString, textRegex)
 
-        newInst.underlyingString = textRes.first!!
+        if(quotedRes.first != null){
 
-        return Pair(
-                if(textRes.first != null) newInst else null,
-                textRes.second
-        )
+            newInst.underlyingString = textRes.first!!
+            newInst.isQuoted = false
+
+            return Pair(
+                    newInst,
+                    textRes.second
+            )
+
+        }
+
+        return Pair(null, textRes.second)
+
+
     }
 
     override fun toString(): String {
