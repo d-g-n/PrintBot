@@ -31,9 +31,9 @@ object CommandCore {
             argumentParams.forEach {
 
                 if (it.isOptional) {
-                    outputString += "[$it]"
+                    outputString += "[${it.description}]"
                 } else {
-                    outputString += "<$it>"
+                    outputString += "<${it.description}>"
                 }
 
                 if(it.isGreedy)

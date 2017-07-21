@@ -9,8 +9,8 @@ CommandCore.command {
     prettyName = "Ban"
     description = "Bans people"
     argumentParams = listOf(
-            UserToken() isOptional false isGreedy false,
-            TextToken() isOptional true isGreedy true
+            UserToken("a user to ban") isOptional false isGreedy false,
+            TextToken("reason") isOptional true isGreedy true
     )
     behaviour = { event, tokens ->
         event.sendBufferedMessage("go away")

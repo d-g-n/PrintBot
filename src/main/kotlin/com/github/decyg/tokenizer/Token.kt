@@ -5,7 +5,7 @@ import sx.blah.discord.handle.obj.IUser
 import sx.blah.discord.util.RequestBuffer
 
 
-sealed class Token {
+sealed class Token(val description : String) {
 
     var underlyingString : String = ""
     var isOptional : Boolean = false
@@ -35,7 +35,7 @@ sealed class Token {
 
 }
 
-class TimeToken : Token() {
+class TimeToken(description : String) : Token(description) {
 
     var timeMillis : Long = 0
 
@@ -45,7 +45,7 @@ class TimeToken : Token() {
 
 }
 
-class UserToken : Token() {
+class UserToken(description : String) : Token(description) {
 
     var mentionedUser : IUser? = null
 
@@ -53,7 +53,7 @@ class UserToken : Token() {
 
     override fun produceToken(inputString : String): Pair<Token?, String> {
 
-        val newInst = UserToken()
+        val newInst = UserToken("")
         val res = getRegexResult(inputString, userRegex)
 
         if(res.first == null)
@@ -80,7 +80,7 @@ class UserToken : Token() {
 
 }
 
-class TextToken : Token() {
+class TextToken(description : String) : Token(description) {
 
     var isQuoted = false
 
@@ -90,7 +90,7 @@ class TextToken : Token() {
     override fun produceToken(inputString : String) : Pair<Token?, String> {
         // First match against quoted text, if match return that, otherwise match text
 
-        val newInst = TextToken()
+        val newInst = TextToken("")
         val quotedRes = getRegexResult(inputString, quotedTextRegex)
 
         if(quotedRes.first != null){

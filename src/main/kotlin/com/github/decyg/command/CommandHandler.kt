@@ -18,7 +18,7 @@ object CommandHandler {
         if(!messageString.startsWith(prefix))
             return
 
-        messageString = messageString.subSequence(prefix.length, messageString.length).toString().trim()
+        messageString = messageString.substring(prefix.length, messageString.length).trim()
 
         if(messageString.isEmpty())
             return
@@ -47,7 +47,7 @@ object CommandHandler {
         // result
 
         val consumedTokens = mutableListOf<Token>()
-        var consumingMessageString = messageString.subSequence(commandName.length, messageString.length).toString().trim()
+        var consumingMessageString = messageString.substring(commandName.length, messageString.length).trim()
 
         command.argumentParams.forEach { token ->
 
@@ -78,8 +78,16 @@ object CommandHandler {
                 } else { // failure
 
                     if(!token.isOptional){ // if it's not optional this is an issue, alert the user
-                        ev.sendErrorMessage("Expected a \"$token\" token at position \"^$consumingMessageString\"\n" +
-                                "The method signature of $commandName is `$command`")
+                        ev.sendErrorMessage(
+                                "Expected a \"$token\" token at position:\n" +
+                                "`${
+                                ev.message.content.substring(
+                                        0,
+                                        ev.message.content.length - consumingMessageString.length
+                                ) + "^$consumingMessageString"
+                                }\n`" +
+                                "The method signature of $commandName is `$command`"
+                        )
                     }
 
                 }
