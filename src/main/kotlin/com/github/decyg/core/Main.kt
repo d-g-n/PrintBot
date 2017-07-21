@@ -10,6 +10,5 @@ fun main(args: Array<String>) {
     DiscordCore.login(args[0])
 
 
-
 }
 

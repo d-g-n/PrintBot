@@ -99,8 +99,8 @@ object CommandHandler {
         // hasn't consumed all the arguments, too many arguments warning?
         //if(userArguments.isNotEmpty())
          //   return
-
-
+        // actually run the command
+        command.behaviour(ev, consumedTokens)
         println(commandName)
         println(consumingMessageString)
         println(consumedTokens)
