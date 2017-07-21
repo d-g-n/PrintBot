@@ -1,6 +1,6 @@
 
 import com.github.decyg.command.CommandCore
-import com.github.decyg.core.sendMessage
+import com.github.decyg.core.sendBufferedMessage
 
 CommandCore.command {
     commandAliases = listOf("help")
@@ -8,7 +8,7 @@ CommandCore.command {
     description = "Displays the list of commands"
     argumentParams = emptyList()
     behaviour = { event, tokens ->
-        event.sendMessage("hello")
+        event.sendBufferedMessage("hello")
     }
 }
 

@@ -1,6 +1,6 @@
 
 import com.github.decyg.command.CommandCore
-import com.github.decyg.core.sendMessage
+import com.github.decyg.core.sendBufferedMessage
 import com.github.decyg.tokenizer.TextToken
 import com.github.decyg.tokenizer.UserToken
 
@@ -13,7 +13,7 @@ CommandCore.command {
             TextToken() isOptional true isGreedy true
     )
     behaviour = { event, tokens ->
-        event.sendMessage("go away")
+        event.sendBufferedMessage("go away")
     }
 }
 

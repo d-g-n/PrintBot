@@ -4,7 +4,7 @@ import com.github.decyg.tokenizer.Token
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
 import sx.blah.discord.util.RequestBuffer
 
-fun MessageReceivedEvent.sendMessage(s: String) {
+fun MessageReceivedEvent.sendBufferedMessage(s: String) {
     RequestBuffer.request {
         this.message.reply(s)
     }

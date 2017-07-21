@@ -52,10 +52,12 @@ class UserToken : Token() {
     val userRegex = "^<@!?(\\d+)>".toRegex()
 
     override fun produceToken(inputString : String): Pair<Token?, String> {
+
+        val newInst = UserToken()
         val res = getRegexResult(inputString, userRegex)
 
         if(res.first == null)
-            Pair(null, res.second)
+            return Pair(null, res.second)
 
         var foundUser : IUser? = null
 
@@ -63,13 +65,17 @@ class UserToken : Token() {
             foundUser = DiscordCore.client.fetchUser(res.first)
         }.get()
 
-        underlyingString = res.first!!
-        mentionedUser = foundUser
+        newInst.underlyingString = res.first!!
+        newInst.mentionedUser = foundUser
 
         return Pair(
-                if(res.first != null && foundUser != null) this else null,
+                if(res.first != null && foundUser != null) newInst else null,
                 res.second
         )
+    }
+
+    override fun toString(): String {
+        return "User Mention"
     }
 
 }
@@ -84,25 +90,32 @@ class TextToken : Token() {
     override fun produceToken(inputString : String) : Pair<Token?, String> {
         // First match against quoted text, if match return that, otherwise match text
 
+        val newInst = TextToken()
         val quotedRes = getRegexResult(inputString, quotedTextRegex)
 
         if(quotedRes.first != null){
 
-            underlyingString = quotedRes.first!!
-            isQuoted = true
+            newInst.underlyingString = quotedRes.first!!
+            newInst.isQuoted = true
 
             return Pair(
-                    this,
+                    newInst,
                     quotedRes.second
             )
         }
 
         val textRes = getRegexResult(inputString, textRegex)
 
+        newInst.underlyingString = textRes.first!!
+
         return Pair(
-                if(textRes.first != null) this else null,
+                if(textRes.first != null) newInst else null,
                 textRes.second
         )
+    }
+
+    override fun toString(): String {
+        return "Text"
     }
 
 }

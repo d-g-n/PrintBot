@@ -1,5 +1,7 @@
 package com.github.decyg.command
 
+import com.github.decyg.core.DiscordCore
+import com.github.decyg.core.config
 import com.github.decyg.tokenizer.Token
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
 
@@ -16,6 +18,32 @@ object CommandCore {
         lateinit var description : String
         lateinit var argumentParams : List<Token>
         lateinit var behaviour : (MessageReceivedEvent, List<Token>) -> Unit
+
+        override fun toString(): String {
+            var outputString = DiscordCore.configStore[config.prefix]
+
+            commandAliases.forEach {
+                outputString = "$outputString$it|"
+            }
+
+            outputString = outputString.substring(0, outputString.length - 1) + " "
+
+            argumentParams.forEach {
+
+                if (it.isOptional) {
+                    outputString += "[$it]"
+                } else {
+                    outputString += "<$it>"
+                }
+
+                if(it.isGreedy)
+                    outputString += "+"
+
+                outputString += " "
+            }
+
+            return outputString.trim()
+        }
     }
 
     fun command(init : Command.() -> Unit) : Command {
