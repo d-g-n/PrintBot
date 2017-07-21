@@ -106,7 +106,7 @@ class TextToken : Token() {
 
         val textRes = getRegexResult(inputString, textRegex)
 
-        if(quotedRes.first != null){
+        if(textRes.first != null){
 
             newInst.underlyingString = textRes.first!!
             newInst.isQuoted = false

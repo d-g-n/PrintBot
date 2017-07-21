@@ -2,7 +2,7 @@ package com.github.decyg.command
 
 import com.github.decyg.core.DiscordCore
 import com.github.decyg.core.config
-import com.github.decyg.core.sendBufferedMessage
+import com.github.decyg.core.sendErrorMessage
 import com.github.decyg.tokenizer.Token
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
@@ -78,7 +78,7 @@ object CommandHandler {
                 } else { // failure
 
                     if(!token.isOptional){ // if it's not optional this is an issue, alert the user
-                        ev.sendBufferedMessage("Expected a \"$token\" token at position \"^$consumingMessageString\"\n" +
+                        ev.sendErrorMessage("Expected a \"$token\" token at position \"^$consumingMessageString\"\n" +
                                 "The method signature of $commandName is `$command`")
                     }
 
