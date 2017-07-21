@@ -79,14 +79,14 @@ object CommandHandler {
 
                     if(!token.isOptional){ // if it's not optional this is an issue, alert the user
                         ev.sendErrorMessage(
-                                "Expected a \"$token\" token at position:\n" +
+                                header = "$command",
+                                errorMessage = "Expected a \"$token\" token at position in message:\n" +
                                 "`${
                                 ev.message.content.substring(
                                         0,
                                         ev.message.content.length - consumingMessageString.length
                                 ) + "^$consumingMessageString"
-                                }\n`" +
-                                "The method signature of $commandName is `$command`"
+                                }`\n"
                         )
                     }
 

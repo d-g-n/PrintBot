@@ -13,11 +13,11 @@ fun MessageReceivedEvent.sendBufferedMessage(message: String) {
     }.get()
 }
 
-fun MessageReceivedEvent.sendErrorMessage(errorMessage : String) {
+fun MessageReceivedEvent.sendErrorMessage(header : String = "Error", errorMessage : String = "") {
 
     val builder = EmbedBuilder()
             .withColor(Color.RED)
-            .withAuthorName("Error")
+            .withAuthorName(header)
             .withDescription(errorMessage)
             .withFooterText("In response to: ${this.author.name}")
 
