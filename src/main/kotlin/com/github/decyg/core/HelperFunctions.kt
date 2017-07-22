@@ -13,14 +13,25 @@ import java.util.function.Predicate
 import kotlin.concurrent.thread
 
 // Helper function to send a message using the requestbuffer
-fun IChannel.sendBufferedMessage(message: String) {
-    RequestBuffer.request {
+fun IChannel.sendBufferedMessage(message: String, secondsTimeout : Int = 5) {
+
+    val sentMessage = RequestBuffer.request <IMessage> {
         this.sendMessage(message)
     }.get()
+
+    thread {
+        Thread.sleep(secondsTimeout * 1000L)
+
+        if(!sentMessage.isDeleted) {
+            RequestBuffer.request {
+                sentMessage.delete()
+            }
+        }
+    }
 }
 
 // Helper function to send a message using the requestbuffer
-fun IChannel.sendInfoEmbed(header : String = "Info", bodyMessage : String = "", secondsTimeout : Int = 5) {
+fun IChannel.sendInfoEmbed(header : String = "Info", bodyMessage : String = "", secondsTimeout : Int = 5) : IMessage {
     val builder = EmbedBuilder()
             .withColor(Color.BLUE)
             .withAuthorName(header)
@@ -31,10 +42,14 @@ fun IChannel.sendInfoEmbed(header : String = "Info", bodyMessage : String = "", 
     thread {
         Thread.sleep(secondsTimeout * 1000L)
 
-        RequestBuffer.request {
-            sentMessage.delete()
+        if(!sentMessage.isDeleted) {
+            RequestBuffer.request {
+                sentMessage.delete()
+            }
         }
     }
+
+    return sentMessage
 
 }
 
@@ -62,14 +77,15 @@ fun IChannel.sendConfirmationEmbed(confirmationUser : IUser, header : String = "
     }.get()
 
     val returnEvent = DiscordCore.client.dispatcher.waitFor(Predicate {
-        (it is ReactionAddEvent) && it.message == sentMessage && it.user == confirmationUser && it.reaction.unicodeEmoji.unicode == "\uD83C\uDDFE"
+        (it is ReactionAddEvent) && it.message == sentMessage && it.user == confirmationUser &&
+                (it.reaction.unicodeEmoji.unicode == "\uD83C\uDDFE" || it.reaction.unicodeEmoji.unicode == "\uD83C\uDDF3")
     }, secondsTimeout * 1000L)
 
     RequestBuffer.request {
         sentMessage.delete()
     }
 
-    return (returnEvent != null)
+    return (returnEvent != null && (returnEvent as ReactionAddEvent).reaction.unicodeEmoji.unicode == "\uD83C\uDDFE")
 }
 
 // Helper function to send an error message embed
@@ -86,23 +102,38 @@ fun IChannel.sendErrorEmbed(header : String = "Error", errorMessage : String = "
 
     thread {
         Thread.sleep(secondsTimeout * 1000L)
-        RequestBuffer.request {
-            sentMessage.delete()
+
+        if(!sentMessage.isDeleted) {
+            RequestBuffer.request {
+                sentMessage.delete()
+            }
         }
     }
 
 }
 
-fun IChannel.getUserResponse(userToWaitFor : IUser, secondsTimeout : Int = 30) : String? {
+fun IChannel.getUserResponse(
+        userToWaitFor : IUser,
+        secondsTimeout : Int = 30,
+        header : String = "Waiting on input from ${userToWaitFor.name}...",
+        bodyMessage : String = "Please enter a response in $secondsTimeout seconds or press X to cancel"
+) : String? {
 
-    this.sendInfoEmbed("Waiting on input from ${userToWaitFor.name}...", "Please enter a response in $secondsTimeout seconds", secondsTimeout)
+    val sentMessage = this.sendInfoEmbed(header, bodyMessage, secondsTimeout)
+
+    sentMessage.addReaction("\u2716")
 
     val query = (DiscordCore.client.dispatcher.waitFor(Predicate {
-        (it is MessageReceivedEvent) && it.author == userToWaitFor && it.channel == this
+        (it is MessageReceivedEvent) && it.author == userToWaitFor && it.channel == this ||
+                (it is ReactionAddEvent) && it.message == sentMessage && it.user == userToWaitFor && it.reaction.unicodeEmoji.unicode == "\u2716"
     }, secondsTimeout * 1000L))
 
-    if(query != null){
-        return (query as MessageReceivedEvent).message.content.trim()
+    RequestBuffer.request {
+        sentMessage.delete()
+    }
+
+    if(query != null && query is MessageReceivedEvent){
+        return query.message.content.trim()
     }
 
     return null

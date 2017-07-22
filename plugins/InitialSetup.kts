@@ -14,15 +14,13 @@ CommandCore.command {
 
         val ownerDM = event.guild.owner.orCreatePMChannel
 
-        ownerDM.sendBufferedMessage(
-                "Hi there! It seems like this is the first time I've joined your server, follow these next steps to set up the roles and prefix correctly.\n" +
-                        "The bot needs to have a role with required permissions for banning, kicking and role management.\n"
-        )
-
-        ownerDM.sendBufferedMessage("First, let's set up the prefix, currently the prefix is set to `${DiscordCore.guildConfigStore[event.guild.id]!!.serverPrefix}`\n" +
-                "Please enter the prefix you wish to use, if you do not wish to change just enter the existing one.")
-
-        val newPrefix = ownerDM.getUserResponse(event.guild.owner) ?: DiscordCore.guildConfigStore[event.guild.id]!!.serverPrefix
+        val newPrefix = ownerDM.getUserResponse(
+                event.guild.owner,
+                header = "Prefix Config",
+                bodyMessage = "Currently the prefix is set to `${DiscordCore.guildConfigStore[event.guild.id]!!.serverPrefix}`\n" +
+                        "Please enter the prefix you wish to use, if you do not wish to change just enter the existing one.\n" +
+                        "Note that you can use a mention for the bot as the prefix\n"
+        ) ?: DiscordCore.guildConfigStore[event.guild.id]!!.serverPrefix
 
         ownerDM.sendInfoEmbed(
                 "Role List",
@@ -32,20 +30,27 @@ CommandCore.command {
                 secondsTimeout = 180
         )
 
-        ownerDM.sendBufferedMessage("The above list represents every role on your server and the IDs they have.")
+        val trustedRoles = ownerDM.getUserResponse(
+                event.guild.owner,
+                secondsTimeout = 60,
+                header = "Trusted Roles",
+                bodyMessage = "Now copy and paste the IDs of the roles you want to be recognised as `TRUSTED`,\n" +
+                        "you can enter more than one role by separating them by a space like so `23232 232323`."
+        )?.split(" ") ?: emptyList()
 
-        ownerDM.sendBufferedMessage("Now copy and paste the IDs of the roles you want to be recognised as TRUSTED, " +
-                "you can enter more than one role by separating them by a space like so `23232 232323`.")
+        val moderatorRoles = ownerDM.getUserResponse(
+                event.guild.owner,
+                secondsTimeout = 60,
+                header = "Moderator Roles",
+                bodyMessage = "Now copy and paste the IDs of the roles you want to be recognised as `MODERATOR`"
+        )?.split(" ") ?: emptyList()
 
-        val trustedRoles = ownerDM.getUserResponse(event.guild.owner, secondsTimeout = 60)?.split(" ") ?: emptyList()
-
-        ownerDM.sendBufferedMessage("Now copy and paste the IDs of the role you want to be recognised as MODERATOR")
-
-        val moderatorRoles = ownerDM.getUserResponse(event.guild.owner, secondsTimeout = 60)?.split(" ") ?: emptyList()
-
-        ownerDM.sendBufferedMessage("Now copy and paste the IDs of the role you want to be recognised as ADMINISTRATOR")
-
-        val administratorRoles = ownerDM.getUserResponse(event.guild.owner, secondsTimeout = 60)?.split(" ") ?: emptyList()
+        val administratorRoles = ownerDM.getUserResponse(
+                event.guild.owner,
+                secondsTimeout = 60,
+                header = "Administrator Roles",
+                bodyMessage = "Now copy and paste the IDs of the roles you want to be recognised as `ADMINISTRATOR`"
+        )?.split(" ") ?: emptyList()
 
         val confirmationBool = ownerDM.sendConfirmationEmbed(
                 event.guild.owner,
@@ -70,8 +75,10 @@ CommandCore.command {
 
             DiscordCore.updateGuildConfigStore(event.guild.id, newPerms)
 
-            ownerDM.sendBufferedMessage("Your changes have been applied. Remember, this command can be reran at any times if it needs to be configured again.")
-
+            ownerDM.sendInfoEmbed(
+                    header = "success",
+                    bodyMessage = "Your changes have been applied. Remember, this command can be reran at any times if it needs to be configured again."
+            )
         }
 
     }
