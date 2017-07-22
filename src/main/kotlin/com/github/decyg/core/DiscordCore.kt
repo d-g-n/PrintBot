@@ -60,27 +60,38 @@ object DiscordCore {
             guildConfigFolder.mkdirs()
 
         val guildConfigFile = File(guildConfigFolder, "${ev.guild.longID}.json")
+        var poko = PermissionPOKO()
 
         if(guildConfigFile.exists()){
             // add it to global store
-            val poko = mapper.readValue<PermissionPOKO>(guildConfigFile)
-
-            guildConfigStore.put(ev.guild.longID.toString(), poko)
+            poko = mapper.readValue<PermissionPOKO>(guildConfigFile)
 
         } else {
 
-            mapper.writeValue(guildConfigFile, PermissionPOKO())
+            mapper.writeValue(guildConfigFile, poko)
 
             // alert the server owner of the setup process
 
             ev.guild.owner.orCreatePMChannel.sendBufferedMessage(
-                    "Please run ${DiscordCore.guildConfigStore[ev.guild.id]!!.serverPrefix}initialsetup from the guild" +
+                    "Please run ${DiscordCore.configStore[config.defaultprefix]}initialsetup from the guild" +
                             " you wish to run the setup for in any channel I can see it."
             )
 
         }
 
+        guildConfigStore.put(ev.guild.longID.toString(), poko)
+
+
         logger.info("Loaded config for guild id ${ev.guild.longID} successfully!")
+
+    }
+
+    fun updateGuildConfigStore(chosenID : String, poko : PermissionPOKO){
+        val guildConfigFolder = File(configStore[config.guildconfigfolder])
+        val guildConfigFile = File(guildConfigFolder, "$chosenID.json")
+
+        guildConfigStore[chosenID] = poko
+        mapper.writeValue(guildConfigFile, poko)
 
     }
 
