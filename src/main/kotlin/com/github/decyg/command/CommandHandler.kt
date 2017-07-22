@@ -2,6 +2,7 @@ package com.github.decyg.command
 
 import com.github.decyg.core.DiscordCore
 import com.github.decyg.core.sendErrorEmbed
+import com.github.decyg.permissions.RoleLevel
 import com.github.decyg.tokenizer.Token
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
@@ -11,10 +12,11 @@ object CommandHandler {
     @EventSubscriber
     fun onMessage(ev : MessageReceivedEvent){
 
+        val guildConfig = DiscordCore.guildConfigStore[ev.guild.id]!!
         var messageString = ev.message.content
         var prefix = ""
         if(ev.guild != null){ // private channel, no prefix needed
-            prefix = DiscordCore.guildConfigStore[ev.guild.id]!!.serverPrefix
+            prefix = guildConfig.serverPrefix
         }
 
         if(!messageString.startsWith(prefix))
@@ -43,6 +45,21 @@ object CommandHandler {
             return
 
         val command = CommandStore.commandStore[commandName]!!
+
+        // found a valid command but check the perms before wasting cycles on processing args
+        // unless the command is for everyone or the owner is the author
+
+        val roleList = ev.author.getRolesForGuild(ev.guild)
+
+        val hasPermission = when(command.requiredPermission){
+            RoleLevel.EVERYONE -> true
+            RoleLevel.TRUSTED -> roleList.firstOrNull { guildConfig.trustedRoleIDs.contains(it.stringID) } != null
+            RoleLevel.MODERATOR -> roleList.firstOrNull { guildConfig.moderatorRoleIDs.contains(it.stringID) } != null
+            RoleLevel.ADMINISTRATOR -> roleList.firstOrNull { guildConfig.administratorRoleIDs.contains(it.stringID) } != null
+            RoleLevel.OWNER -> ev.author == ev.guild.owner
+
+        }
+
 
         // next validate the list of tokens, how?
         // so in the argumentparams of each defined command they have a series of regex which can bit tokenize the

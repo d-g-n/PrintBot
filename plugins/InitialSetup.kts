@@ -7,7 +7,7 @@ import com.github.decyg.permissions.RoleLevel
 CommandCore.command {
     commandAliases = listOf("initialsetup")
     prettyName = "Initial Setup"
-    description = "Runs the initial setup dialogue again"
+    description = "Runs the initial setup dialogue to configure prefix and bound roles"
     requiredPermission = RoleLevel.OWNER
     argumentParams = listOf()
     behaviour = { event, _ ->

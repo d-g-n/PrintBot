@@ -140,11 +140,14 @@ fun IChannel.getUserResponse(
 }
 
 // Helper function to collapse a list of tokens into a space seperated string
-fun MutableList<Token>.asMessageString() : String {
+fun List<Token>.asMessageString(concatAfterIndex : Int = 0) : String {
 
     var tempStr = ""
 
-    this.forEach { tempStr = tempStr + it.underlyingString + " " }
+    this.forEachIndexed { index, token ->
+        if(index > concatAfterIndex)
+            tempStr = tempStr + token.underlyingString + " "
+    }
 
     return tempStr.trim()
 
