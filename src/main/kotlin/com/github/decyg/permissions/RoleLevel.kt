@@ -17,10 +17,10 @@ enum class RoleLevel {
         val guildConfig = DiscordCore.guildConfigStore[guild.stringID]!!
 
         return when(this){
-            EVERYONE -> listOf(guild.everyoneRole)
-            TRUSTED -> guildConfig.trustedRoleIDs.map { guild.getRoleByID(it) } + EVERYONE.getRolesForGuild(guild)
-            MODERATOR -> guildConfig.moderatorRoleIDs.map { guild.getRoleByID(it) } + TRUSTED.getRolesForGuild(guild)
-            ADMINISTRATOR -> guildConfig.administratorRoleIDs.map { guild.getRoleByID(it) } + MODERATOR.getRolesForGuild(guild)
+            EVERYONE -> listOf(guild.everyoneRole) + TRUSTED.getRolesForGuild(guild)
+            TRUSTED -> guildConfig.trustedRoleIDs.map { guild.getRoleByID(it) } + MODERATOR.getRolesForGuild(guild)
+            MODERATOR -> guildConfig.moderatorRoleIDs.map { guild.getRoleByID(it) } + ADMINISTRATOR.getRolesForGuild(guild)
+            ADMINISTRATOR -> guildConfig.administratorRoleIDs.map { guild.getRoleByID(it) } + OWNER.getRolesForGuild(guild)
             else -> emptyList<IRole>()
         }
     }
