@@ -7,7 +7,6 @@ import sx.blah.discord.handle.obj.IMessage
 import sx.blah.discord.util.EmbedBuilder
 import sx.blah.discord.util.RequestBuffer
 import java.awt.Color
-import java.util.concurrent.TimeUnit
 import java.util.function.Predicate
 
 // Helper function to send a message using the requestbuffer
@@ -24,7 +23,7 @@ fun MessageReceivedEvent.sendConfirmationMessage(header : String = "Confirmation
             .withColor(Color.BLUE)
             .withAuthorName(header)
             .withDescription(bodyMessage)
-            .withFooterText("In response to: ${this.author.name}")
+            .withFooterText("In response to: ${this.author.name}, this message will time out with denial in five seconds")
 
     val sentMessage = RequestBuffer.request<IMessage> { this.message.channel.sendMessage(builder.build()) }.get()
 
