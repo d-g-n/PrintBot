@@ -1,6 +1,7 @@
 package com.github.decyg.command
 
 import com.github.decyg.core.DiscordCore
+import com.github.decyg.core.config
 import com.github.decyg.core.sendErrorEmbed
 import com.github.decyg.permissions.RoleLevel
 import com.github.decyg.tokenizer.Token
@@ -12,11 +13,10 @@ object CommandHandler {
     @EventSubscriber
     fun onMessage(ev : MessageReceivedEvent){
 
-        val guildConfig = DiscordCore.guildConfigStore[ev.guild.id]!!
         var messageString = ev.message.content
-        var prefix = ""
+        var prefix = DiscordCore.configStore[config.defaultprefix]
         if(ev.guild != null){ // private channel, no prefix needed
-            prefix = guildConfig.serverPrefix
+            prefix = DiscordCore.guildConfigStore[ev.guild.id]!!.serverPrefix
         }
 
         if(!messageString.startsWith(prefix))
@@ -49,14 +49,20 @@ object CommandHandler {
         // found a valid command but check the perms before wasting cycles on processing args
         // unless the command is for everyone or the owner is the author
 
-        val roleList = ev.author.getRolesForGuild(ev.guild)
+        if(ev.author != ev.guild.owner) {
 
-        val hasPermission = when(command.requiredPermission){
-            RoleLevel.EVERYONE -> true
-            RoleLevel.TRUSTED -> roleList.firstOrNull { guildConfig.trustedRoleIDs.contains(it.stringID) } != null
-            RoleLevel.MODERATOR -> roleList.firstOrNull { guildConfig.moderatorRoleIDs.contains(it.stringID) } != null
-            RoleLevel.ADMINISTRATOR -> roleList.firstOrNull { guildConfig.administratorRoleIDs.contains(it.stringID) } != null
-            RoleLevel.OWNER -> ev.author == ev.guild.owner
+            val roleList = ev.author.getRolesForGuild(ev.guild)
+            val rolesForCommand = command.requiredPermission.getRolesForGuild(ev.guild)
+            val hasPermission = roleList.firstOrNull { rolesForCommand.contains(it) } != null
+
+            if (!hasPermission) {
+                ev.channel.sendErrorEmbed(
+                        header = "$command",
+                        errorMessage = "You must have at least one of these roles to run this command:\n" +
+                                "$rolesForCommand"
+                )
+                return
+            }
 
         }
 
@@ -107,6 +113,7 @@ object CommandHandler {
                                 ) + "^$consumingMessageString"
                                 }`\n"
                         )
+                        return
                     }
 
                 }
