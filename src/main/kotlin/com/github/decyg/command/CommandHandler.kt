@@ -1,9 +1,8 @@
 package com.github.decyg.command
 
+import com.github.decyg.config.config
 import com.github.decyg.core.DiscordCore
-import com.github.decyg.core.config
 import com.github.decyg.core.sendErrorEmbed
-import com.github.decyg.permissions.RoleLevel
 import com.github.decyg.tokenizer.Token
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
@@ -52,14 +51,12 @@ object CommandHandler {
         if(ev.author != ev.guild.owner) {
 
             val roleList = ev.author.getRolesForGuild(ev.guild)
-            val rolesForCommand = command.requiredPermission.getRolesForGuild(ev.guild)
-            val hasPermission = roleList.firstOrNull { rolesForCommand.contains(it) } != null
+            val hasPermission = roleList.firstOrNull { it.permissions.contains(command.requiredPermission) } != null
 
             if (!hasPermission) {
                 ev.channel.sendErrorEmbed(
                         header = "$command",
-                        errorMessage = "You must have at least one of these roles to run this command:\n" +
-                                "$rolesForCommand"
+                        errorMessage = "This command requires the ${command.requiredPermission}."
                 )
                 return
             }

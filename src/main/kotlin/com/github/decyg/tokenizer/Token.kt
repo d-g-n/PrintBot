@@ -1,6 +1,7 @@
 package com.github.decyg.tokenizer
 
 import com.github.decyg.core.DiscordCore
+import org.ocpsoft.prettytime.nlp.PrettyTimeParser
 import sx.blah.discord.handle.obj.IUser
 import sx.blah.discord.util.RequestBuffer
 
@@ -40,6 +41,9 @@ class TimeToken(description : String) : Token(description) {
     var timeMillis : Long = 0
 
     override fun produceToken(inputString : String): Pair<Token?, String> {
+
+        val timeParse = PrettyTimeParser().parseSyntax(inputString)
+
         return Pair(null, "")
     }
 

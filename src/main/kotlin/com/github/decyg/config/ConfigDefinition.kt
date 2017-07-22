@@ -1,4 +1,4 @@
-package com.github.decyg.core
+package com.github.decyg.config
 
 import com.natpryce.konfig.PropertyGroup
 import com.natpryce.konfig.getValue

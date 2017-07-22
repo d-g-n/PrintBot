@@ -1,7 +1,7 @@
 package com.github.decyg.command
 
+import com.github.decyg.config.config
 import com.github.decyg.core.DiscordCore
-import com.github.decyg.core.config
 import java.io.File
 import javax.script.ScriptEngineManager
 

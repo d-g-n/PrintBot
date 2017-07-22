@@ -13,7 +13,7 @@ import java.util.function.Predicate
 import kotlin.concurrent.thread
 
 // Helper function to send a message using the requestbuffer
-fun IChannel.sendBufferedMessage(message: String, secondsTimeout : Int = 5) {
+fun IChannel.sendBufferedMessage(message: String, secondsTimeout : Int = 30) {
 
     val sentMessage = RequestBuffer.request <IMessage> {
         this.sendMessage(message)
@@ -31,11 +31,12 @@ fun IChannel.sendBufferedMessage(message: String, secondsTimeout : Int = 5) {
 }
 
 // Helper function to send a message using the requestbuffer
-fun IChannel.sendInfoEmbed(header : String = "Info", bodyMessage : String = "", secondsTimeout : Int = 5) : IMessage {
+fun IChannel.sendInfoEmbed(header : String = "Info", bodyMessage : String = "", secondsTimeout : Int = 30) : IMessage {
     val builder = EmbedBuilder()
             .withColor(Color.BLUE)
             .withAuthorName(header)
             .withDescription(bodyMessage)
+            .withFooterText("This message will time out and self delete in $secondsTimeout seconds.")
 
     val sentMessage = RequestBuffer.request <IMessage> { this.sendMessage(builder.build()) }.get()
 
@@ -53,12 +54,12 @@ fun IChannel.sendInfoEmbed(header : String = "Info", bodyMessage : String = "", 
 
 }
 
-fun IMessage.sendConfirmationEmbed(header : String = "Confirmation", bodyMessage : String = "", secondsTimeout : Int = 5) : Boolean {
+fun IMessage.sendConfirmationEmbed(header : String = "Confirmation", bodyMessage : String = "", secondsTimeout : Int = 30) : Boolean {
     return this.channel.sendConfirmationEmbed(this.author, header, bodyMessage, secondsTimeout)
 }
 
 // Helper function to send a confirmation prompt to the user in the form of an embed and reactions Y, N
-fun IChannel.sendConfirmationEmbed(confirmationUser : IUser, header : String = "Confirmation", bodyMessage : String = "", secondsTimeout : Int = 5) : Boolean {
+fun IChannel.sendConfirmationEmbed(confirmationUser : IUser, header : String = "Confirmation", bodyMessage : String = "", secondsTimeout : Int = 30) : Boolean {
 
     val builder = EmbedBuilder()
             .withColor(Color.YELLOW)
@@ -89,7 +90,7 @@ fun IChannel.sendConfirmationEmbed(confirmationUser : IUser, header : String = "
 }
 
 // Helper function to send an error message embed
-fun IChannel.sendErrorEmbed(header : String = "Error", errorMessage : String = "", secondsTimeout : Int = 10) {
+fun IChannel.sendErrorEmbed(header : String = "Error", errorMessage : String = "", secondsTimeout : Int = 30) {
 
     val builder = EmbedBuilder()
             .withColor(Color.RED)

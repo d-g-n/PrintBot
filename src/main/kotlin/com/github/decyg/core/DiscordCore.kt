@@ -4,7 +4,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.decyg.command.CommandHandler
 import com.github.decyg.command.CommandStore
-import com.github.decyg.permissions.PermissionPOKO
+import com.github.decyg.config.ConfigPOKO
+import com.github.decyg.config.config
 import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.overriding
@@ -24,7 +25,7 @@ object DiscordCore {
     lateinit var client : IDiscordClient
 
     val mapper = jacksonObjectMapper()
-    val guildConfigStore = mutableMapOf<String, PermissionPOKO>()
+    val guildConfigStore = mutableMapOf<String, ConfigPOKO>()
     val logger = LoggerFactory.getLogger("com.github.decyg.PrintBot")
     val configStore = EnvironmentVariables() overriding
             ConfigurationProperties.fromFile(File("config/config.properties"))
@@ -60,22 +61,15 @@ object DiscordCore {
             guildConfigFolder.mkdirs()
 
         val guildConfigFile = File(guildConfigFolder, "${ev.guild.longID}.json")
-        var poko = PermissionPOKO()
+        var poko = ConfigPOKO()
 
         if(guildConfigFile.exists()){
             // add it to global store
-            poko = mapper.readValue<PermissionPOKO>(guildConfigFile)
+            poko = mapper.readValue<ConfigPOKO>(guildConfigFile)
 
         } else {
 
             mapper.writeValue(guildConfigFile, poko)
-
-            // alert the server owner of the setup process
-
-            ev.guild.owner.orCreatePMChannel.sendBufferedMessage(
-                    "Please run ${DiscordCore.configStore[config.defaultprefix]}initialsetup from the guild" +
-                            " you wish to run the setup for in any channel I can see it."
-            )
 
         }
 
@@ -86,7 +80,7 @@ object DiscordCore {
 
     }
 
-    fun updateGuildConfigStore(chosenID : String, poko : PermissionPOKO){
+    fun updateGuildConfigStore(chosenID : String, poko : ConfigPOKO){
         val guildConfigFolder = File(configStore[config.guildconfigfolder])
         val guildConfigFile = File(guildConfigFolder, "$chosenID.json")
 
