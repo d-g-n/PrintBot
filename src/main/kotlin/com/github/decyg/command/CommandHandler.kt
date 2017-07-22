@@ -1,8 +1,7 @@
 package com.github.decyg.command
 
 import com.github.decyg.core.DiscordCore
-import com.github.decyg.core.config
-import com.github.decyg.core.sendErrorMessage
+import com.github.decyg.core.sendErrorEmbed
 import com.github.decyg.tokenizer.Token
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
@@ -13,7 +12,10 @@ object CommandHandler {
     fun onMessage(ev : MessageReceivedEvent){
 
         var messageString = ev.message.content
-        val prefix = DiscordCore.configStore[config.prefix]
+        var prefix = ""
+        if(ev.guild != null){ // private channel, no prefix needed
+            prefix = DiscordCore.guildConfigStore[ev.guild.id]!!.serverPrefix
+        }
 
         if(!messageString.startsWith(prefix))
             return
@@ -78,7 +80,7 @@ object CommandHandler {
                 } else { // failure
 
                     if(!token.isOptional){ // if it's not optional this is an issue, alert the user
-                        ev.sendErrorMessage(
+                        ev.channel.sendErrorEmbed(
                                 header = "$command",
                                 errorMessage = "Expected a \"$token\" token at position in message:\n" +
                                 "`${
@@ -99,11 +101,9 @@ object CommandHandler {
         // hasn't consumed all the arguments, too many arguments warning?
         //if(userArguments.isNotEmpty())
          //   return
+
         // actually run the command
         command.behaviour(ev, consumedTokens)
-        println(commandName)
-        println(consumingMessageString)
-        println(consumedTokens)
     }
 
 }

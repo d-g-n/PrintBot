@@ -2,6 +2,7 @@ package com.github.decyg.command
 
 import com.github.decyg.core.DiscordCore
 import com.github.decyg.core.config
+import com.github.decyg.permissions.RoleLevel
 import com.github.decyg.tokenizer.Token
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
 
@@ -16,12 +17,12 @@ object CommandCore {
         lateinit var commandAliases : List<String>
         lateinit var prettyName : String
         lateinit var description : String
+        lateinit var requiredPermission : RoleLevel
         lateinit var argumentParams : List<Token>
         lateinit var behaviour : (MessageReceivedEvent, List<Token>) -> Unit
 
         override fun toString(): String {
-            var outputString = DiscordCore.configStore[config.prefix]
-
+            var outputString = ""
             commandAliases.forEach {
                 outputString = "$outputString$it|"
             }

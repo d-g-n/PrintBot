@@ -68,8 +68,19 @@ object DiscordCore {
             guildConfigStore.put(ev.guild.longID.toString(), poko)
 
         } else {
+
             mapper.writeValue(guildConfigFile, PermissionPOKO())
+
+            // alert the server owner of the setup process
+
+            ev.guild.owner.orCreatePMChannel.sendBufferedMessage(
+                    "Please run ${DiscordCore.guildConfigStore[ev.guild.id]!!.serverPrefix}initialsetup from the guild" +
+                            " you wish to run the setup for in any channel I can see it."
+            )
+
         }
+
+        logger.info("Loaded config for guild id ${ev.guild.longID} successfully!")
 
     }
 
