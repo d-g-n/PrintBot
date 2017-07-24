@@ -1,6 +1,7 @@
 
 import com.github.decyg.command.CommandCore
-import com.github.decyg.core.sendConfirmationEmbed
+import com.github.decyg.command.CommandStore
+import com.github.decyg.core.sendInfoEmbed
 import sx.blah.discord.handle.obj.Permissions
 
 CommandCore.command {
@@ -10,7 +11,21 @@ CommandCore.command {
     requiredPermission = Permissions.SEND_MESSAGES
     argumentParams = emptyList()
     behaviour = { event, _ ->
-        event.message.sendConfirmationEmbed("honk", "honk honk")
+
+        println(CommandStore.commandStore.entries)
+
+        event.channel.sendInfoEmbed(
+                header = "Command list",
+                bodyMessage = CommandStore.commandStore.entries.fold("", { init, curObj ->
+                    init +
+                            "```\n" +
+                            "Name: ${curObj.value.prettyName}\n" +
+                            "Description: ${curObj.value.description}\n" +
+                            "Usage: ${curObj.value.toString()}\n" +
+                            "```\n"
+                })
+        )
+
     }
 }
 

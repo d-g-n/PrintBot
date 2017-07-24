@@ -15,7 +15,7 @@ object CommandHandler {
         var messageString = ev.message.content
         var prefix = DiscordCore.configStore[config.defaultprefix]
         if(ev.guild != null){ // private channel, no prefix needed
-            prefix = DiscordCore.guildConfigStore[ev.guild.id]!!.serverPrefix
+            prefix = DiscordCore.guildConfigStore[ev.guild.id]!!.configMap["serverPrefix"] as String
         }
 
         if(!messageString.startsWith(prefix))

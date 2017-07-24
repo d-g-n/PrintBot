@@ -1,10 +1,7 @@
 
 
 import com.github.decyg.command.CommandCore
-import com.github.decyg.core.AuditLog
-import com.github.decyg.core.asMessageString
-import com.github.decyg.core.sendConfirmationEmbed
-import com.github.decyg.core.sendErrorEmbed
+import com.github.decyg.core.*
 import com.github.decyg.tokenizer.TextToken
 import com.github.decyg.tokenizer.UserToken
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser
@@ -36,7 +33,9 @@ CommandCore.command {
             )
 
             if(banBool) {
-                //event.guild.banUser(user.mentionedUser, lengthAndReason)
+                event.guild.banUser(user.mentionedUser, lengthAndReason)
+
+                event.message.indicateSuccess()
 
                 AuditLog.log(
                         event.guild,

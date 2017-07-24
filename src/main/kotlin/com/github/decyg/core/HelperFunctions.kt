@@ -150,6 +150,12 @@ fun IChannel.getUserResponse(
     return null
 }
 
+fun IMessage.indicateSuccess(){
+    RequestBuffer.request {
+        this.addReaction(":ok_hand:")
+    }
+}
+
 // Helper function to collapse a list of tokens into a space seperated string
 fun List<Token>.asMessageString(concatAfterIndex : Int = 0) : String {
 

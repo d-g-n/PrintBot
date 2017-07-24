@@ -8,7 +8,7 @@ object AuditLog {
 
         DiscordCore.logger.info("[${guild.name}] $details")
 
-        val logChannelID = DiscordCore.guildConfigStore[guild.stringID]?.auditLogChannelID ?: ""
+        val logChannelID = DiscordCore.guildConfigStore[guild.stringID]?.configMap!!["auditLogChannelID"] as String ?: ""
 
         if(logChannelID == "")
             return

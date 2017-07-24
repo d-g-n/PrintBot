@@ -34,6 +34,10 @@ sealed class Token(val description : String) {
         return this
     }
 
+    override fun toString(): String {
+        return underlyingString
+    }
+
 }
 
 class TimeToken(description : String) : Token(description) {
