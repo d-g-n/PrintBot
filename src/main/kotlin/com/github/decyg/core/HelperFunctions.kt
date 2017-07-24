@@ -4,6 +4,7 @@ import com.github.decyg.tokenizer.Token
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent
 import sx.blah.discord.handle.obj.IChannel
+import sx.blah.discord.handle.obj.IGuild
 import sx.blah.discord.handle.obj.IMessage
 import sx.blah.discord.handle.obj.IUser
 import sx.blah.discord.util.EmbedBuilder
@@ -155,6 +156,9 @@ fun IMessage.indicateSuccess(){
         this.addReaction(":ok_hand:")
     }
 }
+
+fun IGuild.getServerConfig() = DiscordCore.guildConfigStore[this.stringID]!!.configMap
+fun IGuild.getPluginConfig() = DiscordCore.guildConfigStore[this.stringID]!!.pluginSettings
 
 // Helper function to collapse a list of tokens into a space seperated string
 fun List<Token>.asMessageString(concatAfterIndex : Int = 0) : String {

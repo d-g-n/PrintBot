@@ -74,6 +74,18 @@ object DiscordCore {
 
     }
 
+    fun updateGuildConfigStoreFromCurrent(chosenID : String){
+
+        synchronized(this, {
+            val guildConfigFolder = File(configStore[config.guildconfigfolder])
+            val guildConfigFile = File(guildConfigFolder, "$chosenID.json")
+
+            mapper.writeValue(guildConfigFile, guildConfigStore[chosenID])
+
+        })
+
+    }
+
     fun updateGuildConfigStore(chosenID : String, poko : ConfigPOKO){
 
         synchronized(this, {

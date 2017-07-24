@@ -14,7 +14,7 @@ CommandCore.command {
     )
     behaviour = { event, tokens ->
 
-        val guildConfig = DiscordCore.guildConfigStore[event.guild.stringID]!!
+        val guildConfig = event.guild.getServerConfig()
 
         if(tokens.isEmpty()){
 
@@ -22,7 +22,7 @@ CommandCore.command {
                     header = "Settings",
                     bodyMessage =
                     "The settings are as follows (values delimited by []): \n" +
-                            "${guildConfig.configMap.entries.fold("", { init, curObj ->
+                            "${guildConfig.entries.fold("", { init, curObj ->
                                 init + "`${curObj.key}` -> [${curObj.value}]\n"
                             })}\n" +
                             "To change any use `settings settingname` at which point you will be prompted to make a change"
@@ -32,26 +32,24 @@ CommandCore.command {
 
             val settingName = tokens[0] as TextToken
 
-            if(guildConfig.configMap.containsKey(settingName.underlyingString) && guildConfig.configMap[settingName.underlyingString] is String){
+            if(guildConfig.containsKey(settingName.underlyingString) && guildConfig[settingName.underlyingString] is String){
 
                 val newSetting = event.channel.getUserResponse(
                         event.author,
                         header = "Change $settingName",
-                        bodyMessage = "Currently the setting `$${settingName.underlyingString}` is set to `${guildConfig.configMap[settingName.underlyingString]}`\n" +
+                        bodyMessage = "Currently the setting `$${settingName.underlyingString}` is set to `${guildConfig[settingName.underlyingString]}`\n" +
                                 "Please enter the value you wish to change it to or press the X to cancel.\n"
-                ) ?: guildConfig.configMap[settingName.underlyingString] as String
+                ) ?: guildConfig[settingName.underlyingString] as String
 
                 AuditLog.log(
                         event.guild,
                         "User ${event.author.name} (${event.author.stringID}) has changed the setting of " +
-                                "$settingName from `${guildConfig.configMap[settingName.underlyingString]}` to `$newSetting`"
+                                "$settingName from `${guildConfig[settingName.underlyingString]}` to `$newSetting`"
                 )
 
-                guildConfig.configMap[settingName.underlyingString] = newSetting
+                guildConfig[settingName.underlyingString] = newSetting
 
-                DiscordCore.updateGuildConfigStore(event.guild.id, guildConfig)
-
-
+                DiscordCore.updateGuildConfigStoreFromCurrent(event.guild.stringID)
 
                 event.message.indicateSuccess()
 
