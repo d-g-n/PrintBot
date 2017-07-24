@@ -19,12 +19,14 @@ fun IChannel.sendBufferedMessage(message: String, secondsTimeout : Int = 30) {
         this.sendMessage(message)
     }.get()
 
-    thread {
-        Thread.sleep(secondsTimeout * 1000L)
+    if(secondsTimeout != 0) {
+        thread {
+            Thread.sleep(secondsTimeout * 1000L)
 
-        if(!sentMessage.isDeleted) {
-            RequestBuffer.request {
-                sentMessage.delete()
+            if (!sentMessage.isDeleted) {
+                RequestBuffer.request {
+                    sentMessage.delete()
+                }
             }
         }
     }
@@ -32,20 +34,25 @@ fun IChannel.sendBufferedMessage(message: String, secondsTimeout : Int = 30) {
 
 // Helper function to send a message using the requestbuffer
 fun IChannel.sendInfoEmbed(header : String = "Info", bodyMessage : String = "", secondsTimeout : Int = 30) : IMessage {
-    val builder = EmbedBuilder()
+
+    var builder = EmbedBuilder()
             .withColor(Color.BLUE)
             .withAuthorName(header)
             .withDescription(bodyMessage)
-            .withFooterText("This message will time out and self delete in $secondsTimeout seconds.")
+
+    if(secondsTimeout != 0)
+        builder = builder.withFooterText("This message will time out and self delete in $secondsTimeout seconds.")
 
     val sentMessage = RequestBuffer.request <IMessage> { this.sendMessage(builder.build()) }.get()
 
-    thread {
-        Thread.sleep(secondsTimeout * 1000L)
+    if(secondsTimeout != 0) {
+        thread {
+            Thread.sleep(secondsTimeout * 1000L)
 
-        if(!sentMessage.isDeleted) {
-            RequestBuffer.request {
-                sentMessage.delete()
+            if (!sentMessage.isDeleted) {
+                RequestBuffer.request {
+                    sentMessage.delete()
+                }
             }
         }
     }
@@ -86,6 +93,7 @@ fun IChannel.sendConfirmationEmbed(confirmationUser : IUser, header : String = "
         sentMessage.delete()
     }
 
+
     return (returnEvent != null && (returnEvent as ReactionAddEvent).reaction.unicodeEmoji.unicode == "\uD83C\uDDFE")
 }
 
@@ -101,12 +109,14 @@ fun IChannel.sendErrorEmbed(header : String = "Error", errorMessage : String = "
         this.sendMessage(builder.build())
     }.get()
 
-    thread {
-        Thread.sleep(secondsTimeout * 1000L)
+    if(secondsTimeout != 0) {
+        thread {
+            Thread.sleep(secondsTimeout * 1000L)
 
-        if(!sentMessage.isDeleted) {
-            RequestBuffer.request {
-                sentMessage.delete()
+            if (!sentMessage.isDeleted) {
+                RequestBuffer.request {
+                    sentMessage.delete()
+                }
             }
         }
     }

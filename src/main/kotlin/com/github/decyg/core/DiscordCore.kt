@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory
 import sx.blah.discord.api.ClientBuilder
 import sx.blah.discord.api.IDiscordClient
 import sx.blah.discord.api.events.EventSubscriber
-import sx.blah.discord.handle.impl.events.ReadyEvent
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent
 import java.io.File
 
@@ -39,14 +38,9 @@ object DiscordCore {
         client.dispatcher.registerListener(this)
         client.dispatcher.registerListener(CommandHandler)
 
-        client.login()
-
-    }
-
-    @EventSubscriber
-    fun onReady(ev : ReadyEvent){
-
         CommandStore.registerAllPlugins()
+
+        client.login()
 
     }
 
@@ -81,11 +75,15 @@ object DiscordCore {
     }
 
     fun updateGuildConfigStore(chosenID : String, poko : ConfigPOKO){
-        val guildConfigFolder = File(configStore[config.guildconfigfolder])
-        val guildConfigFile = File(guildConfigFolder, "$chosenID.json")
 
-        guildConfigStore[chosenID] = poko
-        mapper.writeValue(guildConfigFile, poko)
+        synchronized(this, {
+            val guildConfigFolder = File(configStore[config.guildconfigfolder])
+            val guildConfigFile = File(guildConfigFolder, "$chosenID.json")
+
+            guildConfigStore[chosenID] = poko
+            mapper.writeValue(guildConfigFile, poko)
+
+        })
 
     }
 

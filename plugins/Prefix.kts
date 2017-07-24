@@ -21,9 +21,11 @@ CommandCore.command {
                         "Note that you can use a mention for the bot as the prefix\n"
         ) ?: DiscordCore.guildConfigStore[event.guild.id]!!.serverPrefix
 
-        val newConfig = ConfigPOKO(newPrefix)
+        val existingConfig = DiscordCore.guildConfigStore[event.guild.id]!!
 
-        DiscordCore.updateGuildConfigStore(event.guild.id, newConfig)
+        existingConfig.serverPrefix = newPrefix
+
+        DiscordCore.updateGuildConfigStore(event.guild.id, existingConfig)
 
     }
 }

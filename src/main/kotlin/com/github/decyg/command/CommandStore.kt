@@ -29,6 +29,9 @@ object CommandStore {
 
                     commandStore.put(it, curRes)
 
+                    if(curRes.passiveListener != null)
+                        DiscordCore.client.dispatcher.registerListener(curRes.passiveListener)
+
                     DiscordCore.logger.info("Successfully registered command: ${curRes.prettyName} with alias $it")
 
                 }

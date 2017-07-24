@@ -1,12 +1,14 @@
 
 
 import com.github.decyg.command.CommandCore
+import com.github.decyg.core.AuditLog
 import com.github.decyg.core.asMessageString
 import com.github.decyg.core.sendConfirmationEmbed
 import com.github.decyg.core.sendErrorEmbed
 import com.github.decyg.tokenizer.TextToken
 import com.github.decyg.tokenizer.UserToken
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser
+import sx.blah.discord.handle.impl.events.ReadyEvent
 import sx.blah.discord.handle.obj.Permissions
 
 CommandCore.command {
@@ -33,13 +35,29 @@ CommandCore.command {
                             " until ${banTimes[1]} for the reason `$lengthAndReason`"
             )
 
-            if(banBool)
-                event.guild.banUser(user.mentionedUser, lengthAndReason)
+            if(banBool) {
+                //event.guild.banUser(user.mentionedUser, lengthAndReason)
+
+                AuditLog.log(
+                        event.guild,
+                        "User ${event.author.name} (${event.author.stringID}) has banned user ${user.mentionedUser?.name ?: ""} (${user.mentionedUser!!.stringID})" +
+                                " until ${banTimes[1]} for the reason `$lengthAndReason`"
+                )
+            }
 
         } else {
             event.channel.sendErrorEmbed(errorMessage = "No length found in your reason.\n" +
                     "A correct usage is `ban user for ten days due to something`")
         }
+    }
+    passiveListener = end@{ event ->
+        if(event !is ReadyEvent)
+            return@end
+
+        // use this to initalise the config and save it back
+
+        println(event)
+
     }
 }
 

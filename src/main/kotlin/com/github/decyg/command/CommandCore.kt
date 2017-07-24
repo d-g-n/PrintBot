@@ -1,6 +1,7 @@
 package com.github.decyg.command
 
 import com.github.decyg.tokenizer.Token
+import sx.blah.discord.api.events.Event
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
 import sx.blah.discord.handle.obj.Permissions
 
@@ -18,6 +19,8 @@ object CommandCore {
         lateinit var requiredPermission : Permissions
         lateinit var argumentParams : List<Token>
         lateinit var behaviour : (MessageReceivedEvent, List<Token>) -> Unit
+        var passiveListener : ((Event) -> Unit)? = null
+
 
         override fun toString(): String {
             var outputString = ""
