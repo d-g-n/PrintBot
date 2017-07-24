@@ -1,6 +1,5 @@
 package com.github.decyg.command
 
-import com.github.decyg.config.config
 import com.github.decyg.core.DiscordCore
 import com.github.decyg.core.sendErrorEmbed
 import com.github.decyg.tokenizer.Token
@@ -12,11 +11,11 @@ object CommandHandler {
     @EventSubscriber
     fun onMessage(ev : MessageReceivedEvent){
 
+        if(ev.guild == null)
+            return
+
         var messageString = ev.message.content
-        var prefix = DiscordCore.configStore[config.defaultprefix]
-        if(ev.guild != null){ // private channel, no prefix needed
-            prefix = DiscordCore.guildConfigStore[ev.guild.id]!!.configMap["serverPrefix"] as String
-        }
+        val prefix = DiscordCore.guildConfigStore[ev.guild.id]!!.configMap["serverPrefix"] as String
 
         if(!messageString.startsWith(prefix))
             return
@@ -55,8 +54,8 @@ object CommandHandler {
 
             if (!hasPermission) {
                 ev.channel.sendErrorEmbed(
-                        header = "$command",
-                        errorMessage = "This command requires the ${command.requiredPermission}."
+                        header = "Permission error",
+                        errorMessage = "This command requires the ${command.requiredPermission} permission."
                 )
                 return
             }
