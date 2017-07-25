@@ -28,7 +28,7 @@ CommandCore.command {
 
             val banBool = event.channel.sendConfirmationEmbed(
                     event.author,
-                    bodyMessage = "Are you really sure you want to ban ${user.mentionedUser?.name ?: ""} (${user.mentionedUser!!.stringID})" +
+                    bodyMessage = "Are you really sure you want to ban ${user.mentionedUser ?: ""} (${user.mentionedUser!!.stringID})" +
                             " until ${banTimes[1]} for the reason `$lengthAndReason`"
             )
 
@@ -39,7 +39,7 @@ CommandCore.command {
 
                 AuditLog.log(
                         event.guild,
-                        "User ${event.author.name} (${event.author.stringID}) has banned user ${user.mentionedUser?.name ?: ""} (${user.mentionedUser!!.stringID})" +
+                        "User ${event.author} (${event.author.stringID}) has banned user ${user.mentionedUser?.name ?: ""} (${user.mentionedUser!!.stringID})" +
                                 " until ${banTimes[1]} for the reason `$lengthAndReason`"
                 )
             }
@@ -53,7 +53,7 @@ CommandCore.command {
         if(event !is ReadyEvent)
             return@end
 
-        // use this to initalise the config and save it back
+        // Begin a recurring minute timer to check bans
 
         println(event)
 

@@ -1,6 +1,7 @@
 
 
 import com.github.decyg.command.CommandCore
+import com.github.decyg.core.AuditLog
 import com.github.decyg.core.indicateSuccess
 import com.github.decyg.core.sendInfoEmbed
 import com.github.decyg.tokenizer.UserToken
@@ -32,7 +33,7 @@ CommandCore.command {
     commandAliases = listOf("mute")
     prettyName = "Mute"
     description = "Textually mutes or unmutes a user"
-    requiredPermission = Permissions.MANAGE_CHANNEL
+    requiredPermission = Permissions.MANAGE_CHANNELS
     argumentParams = listOf(
             UserToken("a user to toggle mute/unmute on") isOptional false isGreedy false
     )
@@ -61,9 +62,19 @@ CommandCore.command {
         if(userObj.getRolesForGuild(event.guild).contains(mutedRole)){
             RequestBuffer.request { userObj.removeRole(mutedRole) }
             event.channel.sendInfoEmbed(bodyMessage = "User ${userObj.name} has been unmuted.")
+
+            AuditLog.log(
+                    event.guild,
+                    "User ${event.author} (${event.author.stringID}) has unmuted user $userObj (${userObj.stringID})"
+            )
         } else {
             RequestBuffer.request { userObj.addRole(mutedRole) }
             event.channel.sendInfoEmbed(bodyMessage = "User ${userObj.name} has been muted.")
+
+            AuditLog.log(
+                    event.guild,
+                    "User ${event.author} (${event.author.stringID}) has muted user $userObj (${userObj.stringID})"
+            )
         }
 
         event.message.indicateSuccess()

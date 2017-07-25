@@ -29,7 +29,7 @@ CommandCore.command {
 
             AuditLog.log(
                     event.guild,
-                    "User ${event.author.name} (${event.author.stringID}) has pardoned user with id ${userID.underlyingString}"
+                    "User ${event.author} (${event.author.stringID}) has pardoned user with id ${userID.underlyingString}"
             )
 
             event.message.indicateSuccess()

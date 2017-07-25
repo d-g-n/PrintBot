@@ -34,7 +34,7 @@ CommandCore.command {
 
             AuditLog.log(
                     event.guild,
-                    "User ${event.author.name} (${event.author.stringID}) has kicked user ${user.mentionedUser?.name ?: ""} (${user.mentionedUser!!.stringID})" +
+                    "User ${event.author} (${event.author.stringID}) has kicked user ${user.mentionedUser?.name ?: ""} (${user.mentionedUser!!.stringID})" +
                             " for the reason `$reason`"
             )
         }

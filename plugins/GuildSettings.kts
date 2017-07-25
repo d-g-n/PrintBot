@@ -43,7 +43,7 @@ CommandCore.command {
 
                 AuditLog.log(
                         event.guild,
-                        "User ${event.author.name} (${event.author.stringID}) has changed the setting of " +
+                        "User ${event.author} (${event.author.stringID}) has changed the setting of " +
                                 "${settingName.underlyingString} from `${guildConfig[settingName.underlyingString]}` to `$newSetting`"
                 )
 
