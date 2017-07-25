@@ -20,6 +20,7 @@ CommandCore.command {
                     init +
                             "```\n" +
                             "Name: ${curObj.value.prettyName}\n" +
+                            "Permission required: ${curObj.value.requiredPermission}\n" +
                             "Description: ${curObj.value.description}\n" +
                             "Usage: ${curObj.value.toString()}\n" +
                             "```\n"

@@ -36,7 +36,7 @@ CommandCore.command {
 
                 val newSetting = event.channel.getUserResponse(
                         event.author,
-                        header = "Change $settingName",
+                        header = "Change ${settingName.underlyingString}",
                         bodyMessage = "Currently the setting `$${settingName.underlyingString}` is set to `${guildConfig[settingName.underlyingString]}`\n" +
                                 "Please enter the value you wish to change it to or press the X to cancel.\n"
                 ) ?: guildConfig[settingName.underlyingString] as String
@@ -44,7 +44,7 @@ CommandCore.command {
                 AuditLog.log(
                         event.guild,
                         "User ${event.author.name} (${event.author.stringID}) has changed the setting of " +
-                                "$settingName from `${guildConfig[settingName.underlyingString]}` to `$newSetting`"
+                                "${settingName.underlyingString} from `${guildConfig[settingName.underlyingString]}` to `$newSetting`"
                 )
 
                 guildConfig[settingName.underlyingString] = newSetting
