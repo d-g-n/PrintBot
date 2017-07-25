@@ -14,6 +14,7 @@ import sx.blah.discord.api.ClientBuilder
 import sx.blah.discord.api.IDiscordClient
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent
+import sx.blah.discord.handle.obj.IGuild
 import java.io.File
 
 /**
@@ -24,9 +25,10 @@ object DiscordCore {
     lateinit var client : IDiscordClient
 
     val mapper = jacksonObjectMapper()
+    val logger = LoggerFactory.getLogger("com.github.decyg.PrintBot")!!
+
     val guildConfigStore = mutableMapOf<String, ConfigPOKO>()
-    val logger = LoggerFactory.getLogger("com.github.decyg.PrintBot")
-    val configStore = EnvironmentVariables() overriding
+    val globalConfigStore = EnvironmentVariables() overriding
             ConfigurationProperties.fromFile(File("config/config.properties"))
 
     fun login(token : String){
@@ -49,7 +51,7 @@ object DiscordCore {
 
         // check if the guild has a respective json, if not create one
 
-        val guildConfigFolder = File(configStore[config.guildconfigfolder])
+        val guildConfigFolder = File(globalConfigStore[config.guildconfigfolder])
 
         if(!guildConfigFolder.exists())
             guildConfigFolder.mkdirs()
@@ -74,26 +76,17 @@ object DiscordCore {
 
     }
 
-    fun updateGuildConfigStoreFromCurrent(chosenID : String){
-
-        synchronized(this, {
-            val guildConfigFolder = File(configStore[config.guildconfigfolder])
-            val guildConfigFile = File(guildConfigFolder, "$chosenID.json")
-
-            mapper.writeValue(guildConfigFile, guildConfigStore[chosenID])
-
-        })
-
+    fun getConfigForGuild(guild : IGuild) : ConfigPOKO{
+        return guildConfigStore[guild.stringID]!!
     }
 
-    fun updateGuildConfigStore(chosenID : String, poko : ConfigPOKO){
+    fun updateGuildConfigStore(chosenGuild: String){
 
         synchronized(this, {
-            val guildConfigFolder = File(configStore[config.guildconfigfolder])
-            val guildConfigFile = File(guildConfigFolder, "$chosenID.json")
+            val guildConfigFolder = File(globalConfigStore[config.guildconfigfolder])
+            val guildConfigFile = File(guildConfigFolder, "$chosenGuild.json")
 
-            guildConfigStore[chosenID] = poko
-            mapper.writeValue(guildConfigFile, poko)
+            mapper.writeValue(guildConfigFile, guildConfigStore[chosenGuild])
 
         })
 

@@ -17,7 +17,7 @@ object CommandStore {
         commandStore.clear()
         DiscordCore.logger.info("Successfully cleared all registered commands")
 
-        val pluginFolder = File(DiscordCore.configStore[config.pluginfolder])
+        val pluginFolder = File(DiscordCore.globalConfigStore[config.pluginfolder])
         
         pluginFolder.listFiles().forEach {
 

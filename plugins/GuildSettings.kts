@@ -49,7 +49,7 @@ CommandCore.command {
 
                 guildConfig[settingName.underlyingString] = newSetting
 
-                DiscordCore.updateGuildConfigStoreFromCurrent(event.guild.stringID)
+                DiscordCore.updateGuildConfigStore(event.guild.stringID)
 
                 event.message.indicateSuccess()
 
