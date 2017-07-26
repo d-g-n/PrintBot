@@ -26,7 +26,10 @@ CommandCore.command {
 
         val poko = DiscordCore.getConfigForGuild(event.guild)
 
-        if(tokens.isEmpty() && poko.pluginSettings.containsKey(this.prettyName)){
+        if(tokens.isEmpty()){
+
+            if(!poko.pluginSettings.containsKey(this.prettyName))
+                return@end
 
             val curPOKO = DiscordCore.mapper.readValue<BlackListPOKO>(poko.pluginSettings[this.prettyName]!!)
 
@@ -83,7 +86,7 @@ CommandCore.command {
         val curPOKO = DiscordCore.mapper.readValue<BlackListPOKO>(poko.pluginSettings[this.prettyName]!!)
 
         curPOKO.badWordList.forEach {
-            if(event.message.content.contains(it)){
+            if(event.message.content.toLowerCase().contains(it)){
 
                 RequestBuffer.request { event.message.delete() }
 

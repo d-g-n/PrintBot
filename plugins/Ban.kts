@@ -7,6 +7,8 @@ import com.github.decyg.tokenizer.UserToken
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser
 import sx.blah.discord.handle.impl.events.ReadyEvent
 import sx.blah.discord.handle.obj.Permissions
+import java.util.*
+import kotlin.concurrent.fixedRateTimer
 
 CommandCore.command {
     commandAliases = listOf("ban")
@@ -33,7 +35,7 @@ CommandCore.command {
             )
 
             if(banBool) {
-                event.guild.banUser(user.mentionedUser, lengthAndReason)
+                event.guild.banUser(user.mentionedUser, "${banTimes[1].time}|$lengthAndReason")
 
                 event.message.indicateSuccess()
 
@@ -55,7 +57,34 @@ CommandCore.command {
 
         // Begin a recurring minute timer to check bans
 
-        println(event)
+        fixedRateTimer(
+                startAt = Date(),
+                period = 60000
+        ) {
+
+            DiscordCore.client.guilds.forEach { guild ->
+                guild.bans.forEach { ban ->
+                    val reasonExploded = ban.reason.split("|")
+
+                    if(reasonExploded.isNotEmpty()){
+
+                        val timeToCheck = reasonExploded[0].toLong()
+
+                        if(System.currentTimeMillis() >= timeToCheck){
+
+                            guild.pardonUser(ban.user.longID)
+
+                            AuditLog.log(
+                                    guild,
+                                    "User with id ${ban.user} has been unbanned as their time is up."
+                            )
+
+                        }
+                    }
+                }
+            }
+
+        }
 
     }
 }

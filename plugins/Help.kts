@@ -12,8 +12,6 @@ CommandCore.command {
     argumentParams = emptyList()
     behaviour = { event, _ ->
 
-        println(CommandStore.commandStore.entries)
-
         event.channel.sendInfoEmbed(
                 header = "Command list",
                 bodyMessage = CommandStore.commandStore.entries.fold("", { init, curObj ->
