@@ -21,38 +21,30 @@ CommandCore.command {
     behaviour = end@{ event, tokens ->
 
         val curChannelID = event.channel.stringID
-        val poko = DiscordCore.getConfigForGuild(event.guild)
-        if(!poko.pluginSettings.containsKey(this.prettyName)) {
 
-            poko.pluginSettings[this.prettyName] = DiscordCore.mapper.writeValueAsString(PollPOKO(mutableListOf()))
+        DiscordCore.accessPluginSettingsWithPOKO(event.guild, this.prettyName) { curPOKO : PollPOKO ->
+
+            if(curPOKO.pollChannels.contains(curChannelID)){
+                curPOKO.pollChannels.remove(curChannelID)
+
+                event.channel.sendInfoEmbed(bodyMessage = "The channel has been toggled off for polling.")
+
+                AuditLog.log(
+                        event.guild,
+                        "User ${event.author} (${event.author.stringID}) has toggled the channel ${event.channel.name} off for polling."
+                )
+            } else {
+                curPOKO.pollChannels.add(curChannelID)
+
+                event.channel.sendInfoEmbed(bodyMessage = "The channel has been toggled on for polling.")
+
+                AuditLog.log(
+                        event.guild,
+                        "User ${event.author} (${event.author.stringID}) has toggled the channel ${event.channel.name} on for polling."
+                )
+            }
 
         }
-
-        val curPOKO = DiscordCore.mapper.readValue<PollPOKO>(poko.pluginSettings[this.prettyName]!!)
-
-        if(curPOKO.pollChannels.contains(curChannelID)){
-            curPOKO.pollChannels.remove(curChannelID)
-
-            event.channel.sendInfoEmbed(bodyMessage = "The channel has been toggled off for polling.")
-
-            AuditLog.log(
-                    event.guild,
-                    "User ${event.author} (${event.author.stringID}) has toggled the channel ${event.channel.name} off for polling."
-            )
-        } else {
-            curPOKO.pollChannels.add(curChannelID)
-
-            event.channel.sendInfoEmbed(bodyMessage = "The channel has been toggled on for polling.")
-
-            AuditLog.log(
-                    event.guild,
-                    "User ${event.author} (${event.author.stringID}) has toggled the channel ${event.channel.name} on for polling."
-            )
-        }
-
-        poko.pluginSettings[this.prettyName] = DiscordCore.mapper.writeValueAsString(curPOKO)
-
-        DiscordCore.updateGuildConfigStore(event.guild.stringID)
 
         event.message.indicateSuccess()
 

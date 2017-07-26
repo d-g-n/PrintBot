@@ -76,6 +76,23 @@ object DiscordCore {
 
     }
 
+    inline fun <reified T : Any> accessPluginSettingsWithPOKO(guild : IGuild, pluginSettingName : String, applier : (T) -> Unit) {
+
+        val poko = DiscordCore.getConfigForGuild(guild)
+        if(!poko.pluginSettings.containsKey(pluginSettingName)) {
+            poko.pluginSettings[pluginSettingName] = ""
+        }
+
+        val curPOKO = DiscordCore.mapper.readValue<T>(poko.pluginSettings[pluginSettingName]!!)
+
+        applier(curPOKO)
+
+        poko.pluginSettings[pluginSettingName] = DiscordCore.mapper.writeValueAsString(curPOKO)
+
+        DiscordCore.updateGuildConfigStore(guild.stringID)
+
+    }
+
     fun getConfigForGuild(guild : IGuild) : ConfigPOKO{
         return guildConfigStore[guild.stringID]!!
     }
