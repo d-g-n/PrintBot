@@ -24,52 +24,37 @@ CommandCore.command {
     )
     behaviour = end@{ event, tokens ->
 
-        val poko = DiscordCore.getConfigForGuild(event.guild)
+        DiscordCore.accessPluginSettingsWithPOKO(event.guild, this.prettyName) { curPOKO: BlackListPOKO ->
 
-        if(tokens.isEmpty()){
+            if (tokens.isEmpty()) {
 
-            if(!poko.pluginSettings.containsKey(this.prettyName))
-                return@end
+                event.channel.sendInfoEmbed(
+                        header = "Blacklisted words",
+                        bodyMessage = curPOKO.badWordList.fold("", { init, curObj ->
+                            init +
+                                    "```\n" +
+                                    curObj +
+                                    "```\n"
+                        })
+                )
 
-            val curPOKO = DiscordCore.mapper.readValue<BlackListPOKO>(poko.pluginSettings[this.prettyName]!!)
+            } else {
 
-            event.channel.sendInfoEmbed(
-                    header = "Blacklisted words",
-                    bodyMessage = curPOKO.badWordList.fold("", { init, curObj ->
-                        init +
-                                "```\n" +
-                                curObj +
-                                "```\n"
-                    })
-            )
+                val badWord = (tokens[0] as TextToken).underlyingString
 
-            return@end
+                if(curPOKO.badWordList.contains(badWord)){
+                    curPOKO.badWordList.remove(badWord)
+
+                    event.channel.sendInfoEmbed(bodyMessage = "That word has been removed from the list of bad words.")
+                } else {
+                    curPOKO.badWordList.add(badWord)
+
+                    event.channel.sendInfoEmbed(bodyMessage = "That word has been added from the list of bad words.")
+                }
+
+            }
 
         }
-
-        val badWord = (tokens[0] as TextToken).underlyingString
-
-        if(!poko.pluginSettings.containsKey(this.prettyName)) {
-
-            poko.pluginSettings[this.prettyName] = DiscordCore.mapper.writeValueAsString(BlackListPOKO(mutableListOf()))
-
-        }
-
-        val curPOKO = DiscordCore.mapper.readValue<BlackListPOKO>(poko.pluginSettings[this.prettyName]!!)
-
-        if(curPOKO.badWordList.contains(badWord)){
-            curPOKO.badWordList.remove(badWord)
-
-            event.channel.sendInfoEmbed(bodyMessage = "That word has been removed from the list of bad words.")
-        } else {
-            curPOKO.badWordList.add(badWord)
-
-            event.channel.sendInfoEmbed(bodyMessage = "That word has been added from the list of bad words.")
-        }
-
-        poko.pluginSettings[this.prettyName] = DiscordCore.mapper.writeValueAsString(curPOKO)
-
-        DiscordCore.updateGuildConfigStore(event.guild.stringID)
 
         event.message.indicateSuccess()
 

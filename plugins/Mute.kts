@@ -12,7 +12,6 @@ import sx.blah.discord.handle.obj.Permissions
 import sx.blah.discord.util.RequestBuffer
 import java.util.*
 
-data class PollPOKO(var pollChannels : MutableList<String>)
 val mutedRoleName = "bot_muted_role"
 
 fun getMutedRole(guild : IGuild) : IRole {
