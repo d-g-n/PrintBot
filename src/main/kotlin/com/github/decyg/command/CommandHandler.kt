@@ -1,5 +1,6 @@
 package com.github.decyg.command
 
+import com.github.decyg.core.AuditLog
 import com.github.decyg.core.DiscordCore
 import com.github.decyg.core.sendErrorEmbed
 import com.github.decyg.tokenizer.Token
@@ -123,7 +124,16 @@ object CommandHandler {
          //   return
 
         // actually run the command
-        command.behaviour(ev, consumedTokens)
+
+        ev.channel.toggleTypingStatus()
+
+        try {
+            command.behaviour(ev, consumedTokens)
+        } catch (e : Throwable) {
+            AuditLog.log(ev.guild, "Something went wrong executing a command, see trace: $e")
+        }
+
+        ev.channel.toggleTypingStatus()
     }
 
 }
