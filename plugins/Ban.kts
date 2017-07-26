@@ -76,7 +76,7 @@ CommandCore.command {
 
                             AuditLog.log(
                                     guild,
-                                    "User with id ${ban.user} has been unbanned as their time is up."
+                                    "User with id ${ban.user} has been unbanned as their time is up. They were banned because `${ban.reason}`"
                             )
 
                         }

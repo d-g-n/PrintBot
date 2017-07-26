@@ -3,11 +3,17 @@ package com.github.decyg.command
 import com.github.decyg.config.config
 import com.github.decyg.core.DiscordCore
 import java.io.File
-import javax.script.ScriptEngineManager
 
 object CommandStore {
 
-    val engine = ScriptEngineManager().getEngineByExtension("kts")!!
+    init {
+        class Dummy
+
+        val JAR_PATH: String = Dummy::class.java.protectionDomain.codeSource.location.toURI().path //Locates jar file (this doesn't work too well when it isn't compiled to a jar)
+        System.setProperty("kotlin.compiler.jar", JAR_PATH) //So kotlin doesn't like us packaging the compiler...Screw it
+    }
+
+    val engine = KotlinJsr223JvmLocalScriptEngineFactory().scriptEngine
     val commandStore : MutableMap<String, CommandCore.Command> = mutableMapOf()
 
     fun registerAllPlugins() {
@@ -36,6 +42,8 @@ object CommandStore {
 
                 }
 
+            } catch (e  :Throwable){
+                // nothing to see here
             } catch (e : Exception) {
                 DiscordCore.logger.error("Command: ${it.nameWithoutExtension} could not be registered with reason: ", e)
             }
