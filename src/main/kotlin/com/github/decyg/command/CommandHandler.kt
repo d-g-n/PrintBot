@@ -125,15 +125,12 @@ object CommandHandler {
 
         // actually run the command
 
-        ev.channel.toggleTypingStatus()
-
         try {
             command.behaviour(ev, consumedTokens)
         } catch (e : Throwable) {
             AuditLog.log(ev.guild, "Something went wrong executing a command, see trace: $e")
         }
 
-        ev.channel.toggleTypingStatus()
     }
 
 }
