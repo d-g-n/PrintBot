@@ -10,7 +10,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.obj.Permissions
 import sx.blah.discord.util.RequestBuffer
 
-data class PollPOKO(var pollChannels : MutableList<String>)
+data class PollPOKO(var pollChannels : MutableList<String> = mutableListOf())
 
 CommandCore.command {
     commandAliases = listOf("polltoggle")

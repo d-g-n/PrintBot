@@ -63,7 +63,11 @@ CommandCore.command {
         ) {
 
             DiscordCore.client.guilds.forEach { guild ->
-                guild.bans.forEach { ban ->
+                guild.bans.forEach endloop@{ ban ->
+
+                    if(ban.reason == null)
+                        return@endloop
+
                     val reasonExploded = ban.reason.split("|")
 
                     if(reasonExploded.isNotEmpty()){

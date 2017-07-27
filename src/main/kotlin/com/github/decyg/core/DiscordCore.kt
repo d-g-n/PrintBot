@@ -16,6 +16,8 @@ import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent
 import sx.blah.discord.handle.obj.IGuild
 import java.io.File
+import java.lang.reflect.Constructor
+import kotlin.reflect.KClass
 
 /**
  * Created by declan on 15/07/2017.
@@ -80,7 +82,7 @@ object DiscordCore {
 
         val poko = DiscordCore.getConfigForGuild(guild)
         if(!poko.pluginSettings.containsKey(pluginSettingName)) {
-            poko.pluginSettings[pluginSettingName] = ""
+            poko.pluginSettings[pluginSettingName] = DiscordCore.mapper.writeValueAsString(T::class.java.newInstance())
         }
 
         val curPOKO = DiscordCore.mapper.readValue<T>(poko.pluginSettings[pluginSettingName]!!)
