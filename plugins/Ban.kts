@@ -7,6 +7,8 @@ import com.github.decyg.tokenizer.UserToken
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser
 import sx.blah.discord.handle.impl.events.ReadyEvent
 import sx.blah.discord.handle.obj.Permissions
+import sx.blah.discord.util.RequestBuffer
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
@@ -35,6 +37,16 @@ CommandCore.command {
             )
 
             if(banBool) {
+
+                event.guild.channels.forEach { channel ->
+                    val mHistory = channel.getMessageHistoryTo(LocalDateTime.now().minusWeeks(1))
+
+                    RequestBuffer.request {
+                        channel.bulkDelete(mHistory.filter { m -> m.author == user.mentionedUser })
+                    }
+
+                }
+
                 event.guild.banUser(user.mentionedUser, "${banTimes[1].time}|$lengthAndReason")
 
                 event.message.indicateSuccess()
