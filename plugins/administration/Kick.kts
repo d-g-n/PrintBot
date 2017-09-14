@@ -1,5 +1,4 @@
 
-
 import com.github.decyg.command.CommandCore
 import com.github.decyg.core.AuditLog
 import com.github.decyg.core.asMessageString

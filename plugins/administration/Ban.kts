@@ -1,5 +1,4 @@
 
-
 import com.github.decyg.command.CommandCore
 import com.github.decyg.core.*
 import com.github.decyg.tokenizer.TextToken

@@ -1,5 +1,4 @@
 
-
 import com.github.decyg.command.CommandCore
 import com.github.decyg.core.AuditLog
 import com.github.decyg.core.indicateSuccess
@@ -18,13 +17,13 @@ fun getMutedRole(guild : IGuild) : IRole {
 
     val foundRoles = guild.getRolesByName(mutedRoleName)
 
-    if (foundRoles.isEmpty()){
+    return if (foundRoles.isEmpty()){
         val newRole = guild.createRole()
         newRole.changeName(mutedRoleName)
 
-        return newRole
+        newRole
     } else {
-        return foundRoles[0]
+        foundRoles[0]
     }
 }
 
