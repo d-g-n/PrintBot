@@ -24,7 +24,7 @@ CommandCore.command {
         )
 
         if(pardonBool) {
-            event.guild.pardonUser(userID.underlyingString)
+            event.guild.pardonUser(userID.underlyingString.toLong())
 
             AuditLog.log(
                     event.guild,

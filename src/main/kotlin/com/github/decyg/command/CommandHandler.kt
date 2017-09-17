@@ -16,7 +16,7 @@ object CommandHandler {
             return
 
         var messageString = ev.message.content
-        val prefix = DiscordCore.guildConfigStore[ev.guild.id]!!.configMap["serverPrefix"] as String
+        val prefix = DiscordCore.guildConfigStore[ev.guild.stringID]!!.configMap["serverPrefix"] as String
 
         if(!messageString.startsWith(prefix))
             return

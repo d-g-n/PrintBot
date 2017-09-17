@@ -70,7 +70,7 @@ class UserToken(description : String) : Token(description) {
         var foundUser : IUser? = null
 
         RequestBuffer.request {
-            foundUser = DiscordCore.client.fetchUser(res.first)
+            foundUser = DiscordCore.client.fetchUser(res.first!!.toLong())
         }.get()
 
         newInst.underlyingString = res.first!!

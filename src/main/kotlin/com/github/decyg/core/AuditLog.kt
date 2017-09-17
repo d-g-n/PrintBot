@@ -13,7 +13,7 @@ object AuditLog {
         if(logChannelID == "")
             return
 
-        guild.getChannelByID(logChannelID)?.sendInfoEmbed(
+        guild.getChannelByID(logChannelID.toLong())?.sendInfoEmbed(
                 header = "Audit Log",
                 bodyMessage = details,
                 secondsTimeout = 0

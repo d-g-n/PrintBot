@@ -6,6 +6,7 @@ import com.github.decyg.core.DiscordCore
 import com.github.decyg.core.indicateSuccess
 import com.github.decyg.core.sendInfoEmbed
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
+import sx.blah.discord.handle.impl.obj.ReactionEmoji
 import sx.blah.discord.handle.obj.Permissions
 import sx.blah.discord.util.RequestBuffer
 
@@ -59,9 +60,9 @@ CommandCore.command {
 
             if(curPOKO.pollChannels.contains(event.channel.stringID)){
 
-                RequestBuffer.request { event.message.addReaction(":thumbsup:") }.get()
-                RequestBuffer.request { event.message.addReaction(":thumbsdown:") }.get()
-                RequestBuffer.request { event.message.addReaction(":shrug:") }.get()
+                RequestBuffer.request { event.message.addReaction(ReactionEmoji.of("\uD83D\uDC4D")) }.get() // thumbs up
+                RequestBuffer.request { event.message.addReaction(ReactionEmoji.of("\uD83D\uDC4E")) }.get() // thumbs down
+                RequestBuffer.request { event.message.addReaction(ReactionEmoji.of("\uD83E\uDD37")) }.get() // shrug
 
             }
 

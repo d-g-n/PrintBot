@@ -3,6 +3,7 @@ package com.github.decyg.core
 import com.github.decyg.tokenizer.Token
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent
+import sx.blah.discord.handle.impl.obj.ReactionEmoji
 import sx.blah.discord.handle.obj.IChannel
 import sx.blah.discord.handle.obj.IGuild
 import sx.blah.discord.handle.obj.IMessage
@@ -78,16 +79,16 @@ fun IChannel.sendConfirmationEmbed(confirmationUser : IUser, header : String = "
     val sentMessage = RequestBuffer.request<IMessage> { this.sendMessage(builder.build()) }.get()
 
     RequestBuffer.request {
-        sentMessage.addReaction("\uD83C\uDDFE") // yes
+        sentMessage.addReaction(ReactionEmoji.of("\uD83C\uDDFE")) // yes
     }.get()
 
     RequestBuffer.request {
-        sentMessage.addReaction("\uD83C\uDDF3") // no
+        sentMessage.addReaction(ReactionEmoji.of("\uD83C\uDDF3")) // no
     }.get()
 
     val returnEvent = DiscordCore.client.dispatcher.waitFor(Predicate {
         (it is ReactionAddEvent) && it.message == sentMessage && it.user == confirmationUser &&
-                (it.reaction.unicodeEmoji.unicode == "\uD83C\uDDFE" || it.reaction.unicodeEmoji.unicode == "\uD83C\uDDF3")
+                (it.reaction.emoji.name == "\uD83C\uDDFE" || it.reaction.emoji.name == "\uD83C\uDDF3")
     }, secondsTimeout * 1000L)
 
     RequestBuffer.request {
@@ -95,7 +96,7 @@ fun IChannel.sendConfirmationEmbed(confirmationUser : IUser, header : String = "
     }
 
 
-    return (returnEvent != null && (returnEvent as ReactionAddEvent).reaction.unicodeEmoji.unicode == "\uD83C\uDDFE")
+    return (returnEvent != null && (returnEvent as ReactionAddEvent).reaction.emoji.name == "\uD83C\uDDFE")
 }
 
 // Helper function to send an error message embed
@@ -133,11 +134,11 @@ fun IChannel.getUserResponse(
 
     val sentMessage = this.sendInfoEmbed(header, bodyMessage, secondsTimeout)
 
-    sentMessage.addReaction("\u2716")
+    sentMessage.addReaction(ReactionEmoji.of("\u2716"))
 
     val query = (DiscordCore.client.dispatcher.waitFor(Predicate {
         (it is MessageReceivedEvent) && it.author == userToWaitFor && it.channel == this ||
-                (it is ReactionAddEvent) && it.message == sentMessage && it.user == userToWaitFor && it.reaction.unicodeEmoji.unicode == "\u2716"
+                (it is ReactionAddEvent) && it.message == sentMessage && it.user == userToWaitFor && it.reaction.emoji.name == "\u2716"
     }, secondsTimeout * 1000L))
 
     RequestBuffer.request {
@@ -153,7 +154,7 @@ fun IChannel.getUserResponse(
 
 fun IMessage.indicateSuccess(){
     RequestBuffer.request {
-        this.addReaction(":ok_hand:")
+        this.addReaction(ReactionEmoji.of("\uD83D\uDC4C"))
     }
 }
 
