@@ -12,19 +12,13 @@ CommandCore.command {
     argumentParams = emptyList()
     behaviour = { event, _ ->
 
-        event.channel.sendInfoEmbed(
-                header = "Command list",
-                bodyMessage = CommandStore.commandStore.entries.fold("", { init, curObj ->
-                    init +
-                            "```\n" +
-                            "Name: ${curObj.value.prettyName}\n" +
-                            "Permission required: ${curObj.value.requiredPermission}\n" +
-                            "Description: ${curObj.value.description}\n" +
-                            "Usage: ${curObj.value.toString()}\n" +
-                            "```\n"
-                })
-        )
-
+                    if(event.getMessage().toString().split(" ").length > 1){
+                        Command command = CommandStore.commandStore.entries.get(event.getMessage().toString().split(" ")[1]);
+                        event.getChannel().sendMessage(command.prettyName + ": " + command.description + " !" + command.commandAliases[0] + " " + command.argumentParams + " \nNeeded Permission(s): " + command.requiredPermission);
+	    			}
+	    			else{
+	    				event.getChannel().sendMessage("Commands:\n```"+ Arrays.toString(CommandStore.commandStore.entries.toTypedArray()).replace("[", "").replace("]", "")+"```\nUsage: !help <command>");
+	    			}
     }
 }
 
